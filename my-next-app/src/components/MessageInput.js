@@ -80,11 +80,23 @@ export default function MessageInput({ onSendMessage, onFileSelect, disabled }) 
 
   const handleEmojiSelect = (emoji) => {
     setMessage(prev => prev + emoji);
-    setIsEmojiPickerOpen(false);
   };
 
   const handleFileSelect = (fileData) => {
-    onFileSelect(fileData);
+    if (!fileData || !fileData.url) {
+      console.error('Invalid file data received');
+      return;
+    }
+    
+    const processedFileData = {
+      name: fileData.name,
+      size: fileData.size,
+      type: fileData.type,
+      url: fileData.url,
+      id: fileData.id
+    };
+    
+    onFileSelect(processedFileData);
   };
 
   return (

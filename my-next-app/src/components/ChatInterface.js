@@ -319,16 +319,6 @@ export default function ChatInterface() {
                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
                   #{currentRoom.name}
                 </h1>
-                <div className="flex items-center space-x-1">
-                  {isConnected ? (
-                    <Wifi className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <WifiOff className="w-4 h-4 text-red-500" />
-                  )}
-                  <span className={`text-sm ${isConnected ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                    {isConnected ? 'Connected' : 'Disconnected'}
-                  </span>
-                </div>
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 {onlineUsers.length} member{onlineUsers.length !== 1 ? 's' : ''} online

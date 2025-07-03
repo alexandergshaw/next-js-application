@@ -113,16 +113,24 @@ const useChatStore = create((set, get) => ({
 
   // Phase 3: Add message with file/media support
   addFileMessage: (fileData) => {
+    if (!fileData || !fileData.url || !fileData.name || !fileData.type) {
+      console.error('Invalid file data:', fileData);
+      return null;
+    }
+
     const message = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       username: get().user?.username || 'Unknown',
       userId: get().user?.id,
       message: fileData.type.startsWith('image/') ? `📷 Shared an image: ${fileData.name}` : `📎 Shared a file: ${fileData.name}`,
       timestamp: new Date().toISOString(),
+      type: 'file',
       fileData: {
         name: fileData.name,
         size: fileData.size,
         type: fileData.type,
-        url: fileData.url
+        url: fileData.url,
+        id: fileData.id || `file_${Date.now()}`
       }
     };
     

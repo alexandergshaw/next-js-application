@@ -30,19 +30,25 @@ export default function FileUpload({ onFileSelect, disabled }) {
     return true;
   };
 
-  const processFiles = (files) => {
+  const processFiles = async (files) => {
     const validFiles = [];
     
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (validateFile(file)) {
-        // Create file URL for preview
+        // Convert file to base64
+        const base64 = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+
         const fileData = {
           file,
           name: file.name,
           size: file.size,
           type: file.type,
-          url: URL.createObjectURL(file),
+          url: base64,
           id: Date.now() + Math.random()
         };
         validFiles.push(fileData);
@@ -54,10 +60,10 @@ export default function FileUpload({ onFileSelect, disabled }) {
     }
   };
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      processFiles(files);
+      await processFiles(files);
     }
   };
 
@@ -71,24 +77,19 @@ export default function FileUpload({ onFileSelect, disabled }) {
     setIsDragOver(false);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     setIsDragOver(false);
     
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
-      processFiles(files);
+      await processFiles(files);
     }
   };
 
   const removeFile = (fileId) => {
     setSelectedFiles(prev => {
       const updatedFiles = prev.filter(file => file.id !== fileId);
-      // Clean up object URL
-      const fileToRemove = prev.find(file => file.id === fileId);
-      if (fileToRemove) {
-        URL.revokeObjectURL(fileToRemove.url);
-      }
       return updatedFiles;
     });
   };
@@ -97,11 +98,6 @@ export default function FileUpload({ onFileSelect, disabled }) {
     if (selectedFiles.length > 0) {
       selectedFiles.forEach(fileData => {
         onFileSelect(fileData);
-      });
-      
-      // Clean up object URLs
-      selectedFiles.forEach(fileData => {
-        URL.revokeObjectURL(fileData.url);
       });
       
       setSelectedFiles([]);
@@ -154,12 +150,7 @@ export default function FileUpload({ onFileSelect, disabled }) {
               Selected Files ({selectedFiles.length})
             </h3>
             <button
-              onClick={() => {
-                selectedFiles.forEach(fileData => {
-                  URL.revokeObjectURL(fileData.url);
-                });
-                setSelectedFiles([]);
-              }}
+              onClick={() => setSelectedFiles([])}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             >
               <X className="w-4 h-4" />

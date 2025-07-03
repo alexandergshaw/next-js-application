@@ -37,7 +37,10 @@ export default function EmojiPicker({ onEmojiSelect, isOpen, onClose }) {
         {Object.keys(EMOJI_CATEGORIES).map((category) => (
           <button
             key={category}
-            onClick={() => setSelectedCategory(category)}
+            onClick={(e) => {
+              e.preventDefault();
+              setSelectedCategory(category)
+            }}
             className={`px-2 py-1 text-xs rounded-lg whitespace-nowrap font-medium transition-colors border border-transparent ${
               selectedCategory === category
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 border-blue-300 dark:border-blue-700 shadow'
@@ -56,9 +59,9 @@ export default function EmojiPicker({ onEmojiSelect, isOpen, onClose }) {
           <button
             key={index}
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               onEmojiSelect(emoji);
-              onClose();
             }}
             className="w-8 h-8 flex items-center justify-center text-lg rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
             tabIndex={0}

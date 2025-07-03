@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Download, Image as ImageIcon, FileText, Heart, ChevronDown, ArrowDown } from 'lucide-react';
+import { Download, Image as ImageIcon, FileText, Heart, ChevronDown, ArrowDown, X, Maximize2 } from 'lucide-react';
 import useChatStore from '../store/chatStore';
 import TypingIndicator from './TypingIndicator';
+import { toast } from 'react-hot-toast';
 
 const REACTION_EMOJIS = ['❤️', '👍', '😂', '😮', '😢', '😡'];
 
@@ -22,6 +23,7 @@ export default function MessageList() {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
 
   // Smooth scroll to bottom
   const scrollToBottom = useCallback((force = false) => {
@@ -102,19 +104,6 @@ export default function MessageList() {
     }
   };
 
-  const getMessageStatusIcon = (status) => {
-    switch (status) {
-      case 'sent':
-        return '✓';
-      case 'delivered':
-        return '✓✓';
-      case 'read':
-        return '✓✓';
-      default:
-        return '';
-    }
-  };
-
   const isMyMessage = (message) => {
     return message.userId === currentUser?.id || message.username === currentUser?.username;
   };
@@ -125,51 +114,87 @@ export default function MessageList() {
   };
 
   const handleDownload = (fileData) => {
-    const link = document.createElement('a');
-    link.href = fileData.url;
-    link.download = fileData.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const link = document.createElement('a');
+      link.href = fileData.url;
+      link.download = fileData.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast.error('Error downloading file. Please try again.');
+    }
+  };
+
+  const handlePreview = (fileData) => {
+    setPreviewFile(fileData);
+  };
+
+  const closePreview = () => {
+    setPreviewFile(null);
   };
 
   const renderFilePreview = (fileData) => {
-    if (!fileData) return null;
+    if (!fileData || !fileData.url) {
+      console.error('Invalid file data:', fileData);
+      return null;
+    }
 
     const isImage = fileData.type.startsWith('image/');
+    const isPDF = fileData.type === 'application/pdf';
+    const isText = fileData.type === 'text/plain';
     
     return (
-      <div className="mt-2 max-w-xs">
+      <div className="mt-2">
         {isImage ? (
-          <div className="relative group">
+          <div 
+            className="relative group cursor-pointer overflow-hidden rounded-lg"
+            onClick={() => handlePreview(fileData)}
+          >
             <img
               src={fileData.url}
               alt={fileData.name}
-              className="rounded-lg max-h-64 w-auto cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => window.open(fileData.url, '_blank')}
+              className="max-h-64 w-auto object-contain rounded-lg transition-transform duration-200 transform hover:scale-105"
+              onError={(e) => {
+                console.error('Error loading image:', e);
+                e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+                e.target.className = 'rounded-lg max-h-64 w-auto p-8 bg-gray-100 dark:bg-gray-700';
+              }}
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all duration-200 flex items-center justify-center">
-              <ImageIcon className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200">
+              <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:scale-110" />
             </div>
           </div>
         ) : (
-          <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+          <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
             <FileText className="w-8 h-8 text-blue-500 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+              <p className="text-sm font-medium truncate">
                 {fileData.name}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {(fileData.size / 1024 / 1024).toFixed(1)} MB
               </p>
             </div>
-            <button
-              onClick={() => handleDownload(fileData)}
-              className="text-blue-500 hover:text-blue-700 p-1"
-              title="Download file"
-            >
-              <Download className="w-5 h-5" />
-            </button>
+            <div className="flex items-center space-x-2">
+              {(isPDF || isText) && (
+                <button
+                  onClick={() => handlePreview(fileData)}
+                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                  title="Preview file"
+                >
+                  <Maximize2 className="w-5 h-5" />
+                </button>
+              )}
+              <button
+                onClick={() => handleDownload(fileData)}
+                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                title="Download file"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -210,6 +235,78 @@ export default function MessageList() {
 
   return (
     <div className="relative flex-1 flex flex-col min-h-0">
+      {/* File Preview Modal */}
+      {previewFile && (
+        <div 
+          className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4"
+          onClick={closePreview}
+        >
+          <div 
+            className="relative bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                {previewFile.name}
+              </h3>
+              <button
+                onClick={closePreview}
+                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 overflow-auto" style={{ maxHeight: 'calc(90vh - 80px)' }}>
+              {previewFile.type.startsWith('image/') ? (
+                <div className="relative flex items-center justify-center">
+                  <img
+                    src={previewFile.url}
+                    alt={previewFile.name}
+                    className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                    onError={(e) => {
+                      console.error('Error loading image in preview:', e);
+                      e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+                      e.target.className = 'max-w-full h-auto mx-auto p-16 bg-gray-100 dark:bg-gray-700 rounded-lg';
+                    }}
+                  />
+                </div>
+              ) : previewFile.type === 'application/pdf' ? (
+                <iframe
+                  src={previewFile.url}
+                  title={previewFile.name}
+                  className="w-full h-[80vh] rounded-lg shadow-lg"
+                  onError={() => {
+                    toast.error('Error loading PDF preview. Try downloading the file instead.');
+                  }}
+                />
+              ) : previewFile.type === 'text/plain' ? (
+                <pre className="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-200 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg">
+                  <object
+                    data={previewFile.url}
+                    type="text/plain"
+                    className="w-full h-full"
+                  >
+                    Unable to display text content. Try downloading the file instead.
+                  </object>
+                </pre>
+              ) : (
+                <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                  <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <p>Preview not available for this file type.</p>
+                  <button
+                    onClick={() => handleDownload(previewFile)}
+                    className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Download File
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Messages Container */}
       <div 
         ref={messagesContainerRef}
@@ -269,14 +366,78 @@ export default function MessageList() {
                 <div className="break-words">{message.message}</div>
                 
                 {/* File attachment */}
-                {message.fileData && renderFilePreview(message.fileData)}
-                
-                {/* Message status for own messages */}
-                {isMine && !isSystem && message.status && (
-                  <div className="text-xs opacity-75 mt-1 text-right">
-                    <span className={`${message.status === 'read' ? 'text-blue-200' : 'text-white'}`}>
-                      {getMessageStatusIcon(message.status)}
-                    </span>
+                {message.fileData && (
+                  <div className={`mt-2 ${isMine ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}>
+                    <div className="max-w-[300px]">
+                      {message.fileData.type.startsWith('image/') ? (
+                        <div 
+                          className="relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700"
+                          onClick={() => handlePreview(message.fileData)}
+                        >
+                          <img
+                            src={message.fileData.url}
+                            alt={message.fileData.name}
+                            className="w-full h-auto object-cover rounded-lg transition-transform duration-200 transform hover:scale-105"
+                            onError={(e) => {
+                              console.error('Error loading image:', e);
+                              e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+                              e.target.className = 'w-full h-48 p-8 object-contain';
+                            }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200">
+                            <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:scale-110" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={`flex items-center space-x-3 p-3 rounded-lg ${
+                          isMine 
+                            ? 'bg-blue-500 hover:bg-blue-600' 
+                            : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        } transition-colors duration-200`}>
+                          <FileText className={`w-8 h-8 flex-shrink-0 ${
+                            isMine ? 'text-white' : 'text-blue-500 dark:text-blue-400'
+                          }`} />
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium truncate ${
+                              isMine ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+                            }`}>
+                              {message.fileData.name}
+                            </p>
+                            <p className={`text-xs ${
+                              isMine ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
+                            }`}>
+                              {(message.fileData.size / 1024 / 1024).toFixed(1)} MB
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {(message.fileData.type === 'application/pdf' || message.fileData.type === 'text/plain') && (
+                              <button
+                                onClick={() => handlePreview(message.fileData)}
+                                className={`p-1 rounded-full transition-colors ${
+                                  isMine 
+                                    ? 'text-white hover:bg-blue-400' 
+                                    : 'text-blue-500 hover:bg-gray-300 dark:text-blue-400 dark:hover:bg-gray-500'
+                                }`}
+                                title="Preview file"
+                              >
+                                <Maximize2 className="w-5 h-5" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDownload(message.fileData)}
+                              className={`p-1 rounded-full transition-colors ${
+                                isMine 
+                                  ? 'text-white hover:bg-blue-400' 
+                                  : 'text-blue-500 hover:bg-gray-300 dark:text-blue-400 dark:hover:bg-gray-500'
+                              }`}
+                              title="Download file"
+                            >
+                              <Download className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 

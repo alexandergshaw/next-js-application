@@ -1,0 +1,122 @@
+// RiveScript brain for music-lover NPCs (Ethan)
+! version = 2.0
+
+// Musical greetings
++ hello
+- Hello! What's playing on your soundtrack today? 🎵
+- Hey there! Any good music discoveries lately?
+- Hi! Ready to talk about some amazing tunes?
+
++ hi
+- Hi! What's been on repeat for you?
+- Hey! Any new artists catching your attention?
+- Hi there! How's your playlist looking these days?
+
++ hey
+- Hey! Music to my ears! 🎶
+- What's up! Any concerts coming up?
+- Hey! What genre are you feeling today?
+
+// Music topics
++ * (music|song|songs|track|tracks) *
+- Music! What's your current favorite track?
+- Songs are life! What genre gets you most excited?
+- Musical vibes! Any recommendations for me?
+- That's my language! What's resonating with you lately?
+
++ * (artist|band|musician|singer) *
+- Artists! Who's been inspiring you recently?
+- Bands are amazing! Any new discoveries?
+- Musicians create such magic! Who's your current obsession?
+- That artist has such a unique sound! What draws you to them?
+
++ * (album|ep|release|new music) *
+- New releases! The music scene is always evolving!
+- Albums tell such complete stories! What's your latest listen?
+- Fresh music! Have you heard any standout tracks lately?
+- Music releases! What's on your must-listen list?
+
++ * (concert|live|show|festival) *
+- Live music! Nothing beats that energy! 🎤
+- Concerts are pure magic! Who have you seen recently?
+- Live shows! The connection between artist and audience is incredible!
+- Festivals! So much great music in one place!
+
++ * (guitar|piano|drums|bass|instrument) *
+- Instruments! Do you play anything yourself?
+- Musical instruments! Each one has such a unique voice!
+- That's the soul of music! What instrument speaks to you?
+- Playing music is such a beautiful form of expression!
+
+// Genres
++ * (rock|metal|punk|alternative) *
+- Rock music! The energy and power are unmatched!
+- That genre has such raw emotion! Any favorite subgenres?
+- Rock on! 🤘 What draws you to that sound?
+- Classic genre! The guitar work in rock is incredible!
+
++ * (hip hop|rap|r&b|soul) *
+- Hip hop! The lyricism and beats are so creative!
+- That genre has such powerful storytelling! Any favorite artists?
+- R&B and soul! Those vocals give me chills every time!
+- The rhythm and flow! What's your favorite track?
+
++ * (electronic|edm|techno|house) *
+- Electronic music! The production possibilities are endless!
+- EDM! Perfect for getting those endorphins flowing!
+- Electronic beats! How do you like to experience that music?
+- Digital soundscapes! The creativity in electronic music is amazing!
+
++ * (jazz|blues|classical|folk) *
+- Classic genres! The musicianship and history are incredible!
+- Jazz has such sophisticated improvisation! Any favorite artists?
+- Blues! The emotion and storytelling are so powerful!
+- Timeless music! Those genres have such depth and soul!
+
+// Music production and technical
++ * (production|mixing|mastering|recording) *
+- Music production! The technical artistry behind the scenes!
+- Audio engineering! It's amazing how production shapes the final sound!
+- Recording! Do you have any experience with music creation?
+- The production quality can make or break a track!
+
++ * (lyrics|vocals|singing|voice) *
+- Lyrics! Words can be so powerful when set to music!
+- Vocals! A great voice can give you goosebumps instantly!
+- The human voice is such a versatile instrument!
+- Lyrical content! What kind of messages resonate with you?
+
+// Music emotions and experiences
++ * (vibe|mood|feeling|emotion) *
+- Music and emotions! That's what makes it so universal!
+- Musical vibes! Each song can transport you somewhere different!
+- The feeling music gives you! That's pure magic right there!
+- Emotional connection! Music speaks to the soul!
+
++ * (dance|dancing|groove|rhythm) *
+- Dancing! Music that makes you move is special!
+- Rhythm! The groove that gets into your bones!
+- Dance music! There's something primal about moving to a beat!
+- When the music makes you groove! That's when you know it's good!
+
+// Music discovery and sharing
++ * (playlist|spotify|apple music|streaming) *
+- Playlists! Curating the perfect musical journey!
+- Streaming! So much music at our fingertips these days!
+- Musical curation! What's your playlist-making strategy?
+- Digital music! Any hidden gems you've discovered?
+
++ * (recommendation|suggest|share) *
+- Musical recommendations! I love discovering new sounds!
+- Sharing music! That's how the best discoveries happen!
+- Music suggestions! What should I be listening to?
+- Musical knowledge sharing! What's worth checking out?
+
+// Default music responses
++ *
+- That sounds melodious! Tell me more about that musical aspect!
+- Interesting! How does that relate to your musical taste?
+- Musical thoughts! What's the rhythm behind that idea?
+- That resonates! Any musical connections to that?
+- Cool! Does that remind you of any particular songs?
+- Musical minds think alike! What's your take on that?

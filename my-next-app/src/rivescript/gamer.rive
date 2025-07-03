@@ -1,0 +1,117 @@
+// RiveScript brain for gamer NPCs (Diana)
+! version = 2.0
+
+// Gaming greetings
++ hello
+- Hey! Ready to game? 🎮
+- What's up gamer!
+- Hello! What have you been playing?
+
++ hi
+- GG! What's your current game?
+- Hi! Any epic wins lately?
+- Hey! Gaming session incoming?
+
++ hey
+- Hey! Level up time?
+- What's good in the gaming world?
+- Hey gamer!
+
+// Gaming topics
++ * (game|gaming|play|playing) *
+- Gaming! What's your main game right now?
+- Epic! What platform are you on?
+- Nice! Solo or multiplayer?
+- That's awesome! What's your favorite genre?
+- Gaming is life! What's your current obsession?
+
++ * (fps|shooter|cod|battlefield) *
+- FPS games! What's your K/D ratio like?
+- Shooters are intense! You play competitive?
+- Nice choice! What's your weapon of choice?
+- FPS skills! How's your aim training going?
+
++ * (rpg|mmorpg|wow|final fantasy) *
+- RPGs are the best! What class do you main?
+- MMORPGs! How's your guild doing?
+- RPG life! What's your current level?
+- Love RPGs! Which storyline hooked you most?
+
++ * (competitive|esports|rank|ranked) *
+- Competitive gaming! What rank are you?
+- Esports! That's where the real skill shows!
+- Ranked matches are intense! How's the grind?
+- Competition mode! What's your main competitive game?
+
++ * (stream|streaming|twitch|youtube) *
+- Streaming! That's awesome! What's your channel?
+- Content creation! What games do you stream?
+- Streaming life! How's your audience growing?
+- That's cool! Any viral moments yet?
+
+// Gaming emotions
++ * (win|won|victory|gg) *
+- GG! That must have felt amazing!
+- Victory! Nothing beats that winning feeling!
+- Epic win! 🏆
+- That's what I'm talking about! Well played!
+
++ * (lose|lost|defeat|rip) *
+- RIP! That's rough, but you'll get them next time!
+- F in chat! Every loss is a learning experience!
+- That sucks! But that's what makes the wins sweeter!
+- Better luck next time! The comeback will be epic!
+
++ * (lag|ping|connection) *
+- Ugh, lag is the worst enemy of any gamer!
+- High ping is so frustrating! Gaming on hard mode!
+- Connection issues! The real final boss!
+- Lag deaths don't count! 😤
+
+// Gaming gear and setup
++ * (pc|console|playstation|xbox|nintendo) *
+- Nice setup! PC master race or console gaming?
+- Gaming rig! What are your specs?
+- Console gaming! Which generation are you on?
+- Hardware talk! What's your dream setup?
+
++ * (controller|keyboard|mouse|headset) *
+- Gaming gear! Good equipment makes all the difference!
+- That's important! What's your preferred input method?
+- Gaming peripherals! Mechanical keyboard life?
+- Audio is crucial! Good headset for those callouts!
+
+// New releases and updates
++ * (update|patch|new|release) *
+- New content! Have you tried the latest update?
+- Patch notes! What changes are you excited about?
+- New releases! So many games, so little time!
+- Updates can totally change the meta!
+
++ * (meta|balance|nerf|buff) *
+- Meta talk! What's overpowered right now?
+- Balance changes! Some characters needed that nerf!
+- The meta is always shifting! Gotta adapt!
+- Buff or nerf? The eternal gaming debate!
+
+// Gaming problems
++ * (bug|glitch|broken|crash) *
+- Game bugs! That's so annoying when it happens!
+- Glitches can be hilarious or game-breaking!
+- Crashes during important moments are the worst!
+- Beta testing life! Time to report that bug!
+
++ * (toxic|rage|salt|angry) *
+- Toxic players ruin the fun! Just mute and move on!
+- Gaming rage happens! Take a break when needed!
+- Salty opponents make victories even sweeter!
+- Don't let the toxicity get to you! Focus on your game!
+
+// Default gaming responses
++ *
+- That's pretty epic! Tell me more!
+- Interesting! How does that affect the gameplay?
+- Cool! What's your strategy for that?
+- Nice! Any pro tips to share?
+- That sounds like a good challenge!
+- Gaming wisdom! I like your thinking!

@@ -31,6 +31,15 @@ const useChatStore = create((set, get) => ({
   searchResults: [],
   isSearchOpen: false,
 
+  // Phase 4: Room/Channel state
+  currentRoom: { id: 'general', name: 'General' },
+  availableRooms: [],
+  privateMessages: [],
+
+  // Phase 4: Notifications
+  unreadMessages: {},
+  notifications: [],
+
   // Authentication actions
   login: async (username, password) => {
     set({ isLoading: true, error: null });
@@ -40,7 +49,7 @@ const useChatStore = create((set, get) => ({
         user, 
         isAuthenticated: true, 
         isLoading: false,
-        messages: messageService.getMessages() // Load persisted messages
+        messages: messageService.getMessagesForRoom('general') // Load persisted messages for default room
       });
       return user;
     } catch (error) {
@@ -73,7 +82,12 @@ const useChatStore = create((set, get) => ({
       socket: null,
       searchQuery: '',
       searchResults: [],
-      isSearchOpen: false
+      isSearchOpen: false,
+      currentRoom: { id: 'general', name: 'General' },
+      availableRooms: [],
+      privateMessages: [],
+      unreadMessages: {},
+      notifications: []
     });
   },
 
@@ -83,10 +97,17 @@ const useChatStore = create((set, get) => ({
   
   // Message actions
   addMessage: (message) => {
-    const newMessage = messageService.addMessage(message);
-    set((state) => ({
-      messages: [...state.messages, newMessage]
-    }));
+    const state = get();
+    const roomId = state.currentRoom.id || 'general';
+    const newMessage = messageService.addMessageToRoom(roomId, message);
+    
+    // Only add to current state if it's for the current room
+    if (newMessage.roomId === roomId) {
+      set((state) => ({
+        messages: [...state.messages, newMessage]
+      }));
+    }
+    
     return newMessage;
   },
 
@@ -108,13 +129,20 @@ const useChatStore = create((set, get) => ({
     return get().addMessage(message);
   },
 
-  // Phase 3: Add reaction to message
+  // Phase 3: Add reaction to message (now with real socket support)
   addReaction: (messageId, emoji) => {
     const state = get();
     const userId = state.user?.id;
-    if (!userId) return;
+    if (!userId || !state.socket) return;
 
-    // Update in messageService
+    // Send reaction through socket (property must be 'reaction' not 'emoji')
+    state.socket.emit('add_reaction', { 
+      messageId, 
+      reaction: emoji, 
+      roomId: state.currentRoom.id 
+    });
+
+    // Update local state (will be confirmed by server)
     const updatedMessage = messageService.addReaction(messageId, userId, emoji);
     
     if (updatedMessage) {
@@ -124,6 +152,22 @@ const useChatStore = create((set, get) => ({
         )
       }));
     }
+  },
+
+  // Handle reaction from server
+  handleReaction: (reactionData) => {
+    set((state) => ({
+      messages: state.messages.map(msg => {
+        if (msg.id === reactionData.messageId) {
+          // Always use the updated reactions array from the server
+          return {
+            ...msg,
+            reactions: reactionData.reactions || []
+          };
+        }
+        return msg;
+      })
+    }));
   },
   
   updateMessageStatus: (messageId, status) => {
@@ -138,7 +182,14 @@ const useChatStore = create((set, get) => ({
   },
 
   loadMessages: () => {
-    const messages = messageService.getMessages();
+    const state = get();
+    const roomId = state.currentRoom.id || 'general';
+    const messages = messageService.getMessagesForRoom(roomId);
+    set({ messages });
+  },
+
+  loadMessagesForRoom: (roomId) => {
+    const messages = messageService.getMessagesForRoom(roomId);
     set({ messages });
   },
   
@@ -182,6 +233,110 @@ const useChatStore = create((set, get) => ({
     searchResults: [], 
     isSearchOpen: false 
   }),
+
+  // Phase 4: Room/Channel actions
+  setCurrentRoom: (room) => set({ currentRoom: room }),
+  
+  setAvailableRooms: (rooms) => set({ availableRooms: rooms }),
+  
+  switchRoom: (roomId, roomName) => {
+    const state = get();
+    
+    // Save current room messages before switching
+    if (state.currentRoom.id && state.messages.length > 0) {
+      messageService.saveMessagesForRoom(state.currentRoom.id, state.messages);
+    }
+    
+    // Load messages for the new room
+    const roomMessages = messageService.getMessagesForRoom(roomId);
+    
+    if (state.socket) {
+      state.socket.emit('switch_room', { roomId });
+    }
+    
+    set({ 
+      currentRoom: { id: roomId, name: roomName },
+      messages: roomMessages // Load room-specific messages
+    });
+  },
+
+  handleRoomData: (roomData) => {
+    const state = get();
+    const roomId = roomData.id;
+    
+    // Load existing messages for the room
+    const existingMessages = messageService.getMessagesForRoom(roomId);
+    
+    // Merge with any new messages from room data
+    const newMessages = roomData.messages || [];
+    const allMessages = [...existingMessages];
+    
+    // Add any new messages that don't already exist
+    newMessages.forEach(newMsg => {
+      if (!allMessages.find(existing => existing.id === newMsg.id)) {
+        allMessages.push(newMsg);
+      }
+    });
+    
+    // Save the merged messages
+    messageService.saveMessagesForRoom(roomId, allMessages);
+    
+    set({
+      currentRoom: { id: roomData.id, name: roomData.name },
+      messages: allMessages,
+      onlineUsers: roomData.users || []
+    });
+  },
+
+  // Phase 4: Private messaging
+  addPrivateMessage: (message) => {
+    set((state) => ({
+      privateMessages: [...state.privateMessages, message]
+    }));
+  },
+
+  sendPrivateMessage: (recipientId, message) => {
+    const state = get();
+    if (state.socket) {
+      state.socket.emit('send_private_message', { recipientId, message });
+    }
+  },
+
+  // Phase 4: Notifications
+  addNotification: (notification) => {
+    set((state) => ({
+      notifications: [notification, ...state.notifications.slice(0, 9)] // Keep last 10
+    }));
+  },
+
+  markNotificationRead: (notificationId) => {
+    set((state) => ({
+      notifications: state.notifications.map(n => 
+        n.id === notificationId ? { ...n, read: true } : n
+      )
+    }));
+  },
+
+  clearNotifications: () => set({ notifications: [] }),
+
+  // Phase 4: Unread message tracking
+  markRoomRead: (roomId) => {
+    set((state) => ({
+      unreadMessages: {
+        ...state.unreadMessages,
+        [roomId]: 0
+      }
+    }));
+  },
+
+  incrementUnreadCount: (roomId) => {
+    set((state) => ({
+      unreadMessages: {
+        ...state.unreadMessages,
+        [roomId]: (state.unreadMessages[roomId] || 0) + 1
+      }
+    }));
+  },
 
   // Error handling
   setError: (error) => set({ error }),

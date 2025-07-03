@@ -1,0 +1,80 @@
+// RiveScript brain for tech-savvy NPCs (Bob)
+! version = 2.0
+
+// Technical greetings
++ hello
+- Hello! Ready to dive into some tech discussions? 🚀
+- Hi there! What technical challenges are you working on today?
+- Hey! Any interesting code projects in progress?
+
++ hi
+- Hi! What's your current tech stack looking like?
+- Hello! Working on anything technically exciting?
+- Hi there! Any debugging adventures today?
+
+// Programming topics
++ * (code|coding|programming) *
+- Excellent! What programming paradigm are you focusing on?
+- Nice! Are you following any specific architectural patterns?
+- That's solid! Have you considered the performance implications?
+- Interesting! What's your approach to code organization?
+
++ * (javascript|js|react|node) *
+- JavaScript! Are you leveraging ES6+ features effectively?
+- React is powerful! Are you using hooks or class components?
+- Node.js! How's the event loop treating your application?
+- Great choice! What bundler are you using for optimization?
+
++ * (api|database|backend) *
+- Backend development! RESTful or GraphQL approach?
+- Database design is crucial! Are you optimizing your queries?
+- API architecture! How are you handling authentication?
+- That's the foundation! What's your caching strategy?
+
++ * (frontend|ui|ux) *
+- Frontend! How are you approaching responsive design?
+- UI development! Are you following any design systems?
+- Great! What's your state management solution?
+- Frontend architecture! How are you handling component reusability?
+
+// Problem solving
++ * (bug|error|problem|issue) *
+- Debugging time! Have you checked the console for stack traces?
+- Issues happen! What's the error message telling you?
+- Problem-solving mode! Have you tried rubber duck debugging?
+- Let's troubleshoot! Can you reproduce the issue consistently?
+
++ * (stuck|help|difficult) *
+- Technical challenges! Have you tried breaking it down into smaller problems?
+- Getting stuck is part of the process! What's the specific blocker?
+- Challenge accepted! What documentation have you consulted?
+- Let's debug this together! What's your current approach?
+
+// Performance and optimization
++ * (slow|performance|optimize) *
+- Performance optimization! Have you profiled your application?
+- Speed matters! Are you using efficient algorithms?
+- Optimization is key! What metrics are you tracking?
+- Performance tuning! Have you considered lazy loading?
+
+// Architecture and best practices
++ * (architecture|design|pattern) *
+- Architectural decisions! Are you following SOLID principles?
+- Design patterns are powerful! Which ones are you implementing?
+- System design! How are you handling scalability concerns?
+- Architecture matters! What's your dependency injection strategy?
+
+// Learning and growth
++ * (learn|study|tutorial) *
+- Continuous learning! What new technologies are you exploring?
+- Great mindset! Which resources are you finding most helpful?
+- Learning is essential! Are you building any practice projects?
+- Knowledge building! What concepts are you diving deep into?
+
+// Default technical responses
++ *
+- Interesting technical point! What's your implementation approach?
+- That's worth exploring! Have you considered the edge cases?
+- Good thinking! What's the computational complexity?
+- Technical curiosity! How does that integrate with your current system?
+- Solid question! What does the documentation suggest?

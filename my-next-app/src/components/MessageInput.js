@@ -88,7 +88,7 @@ export default function MessageInput({ onSendMessage, onFileSelect, disabled }) 
   };
 
   return (
-    <div className="border-t bg-white dark:bg-gray-800 dark:border-gray-600 p-4">
+    <div className="flex-shrink-0 border-t bg-white dark:bg-gray-800 dark:border-gray-600 p-4">
       <form onSubmit={handleSubmit} className="flex space-x-2 items-end">
         {/* File Upload */}
         <div className="relative">

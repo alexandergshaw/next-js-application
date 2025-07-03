@@ -4,8 +4,10 @@ class AuthService {
     this.currentUser = this.loadCurrentUser();
   }
 
-  // Load users from localStorage
+  // Load users from localStorage (client-side only)
   loadUsers() {
+    if (typeof window === 'undefined') return [];
+    
     try {
       const users = localStorage.getItem('chatapp_users');
       return users ? JSON.parse(users) : [];
@@ -15,8 +17,10 @@ class AuthService {
     }
   }
 
-  // Save users to localStorage
+  // Save users to localStorage (client-side only)
   saveUsers(users) {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.setItem('chatapp_users', JSON.stringify(users));
       this.users = users;
@@ -25,8 +29,10 @@ class AuthService {
     }
   }
 
-  // Load current user from localStorage
+  // Load current user from localStorage (client-side only)
   loadCurrentUser() {
+    if (typeof window === 'undefined') return null;
+    
     try {
       const user = localStorage.getItem('chatapp_current_user');
       return user ? JSON.parse(user) : null;
@@ -36,8 +42,10 @@ class AuthService {
     }
   }
 
-  // Save current user to localStorage
+  // Save current user to localStorage (client-side only)
   saveCurrentUser(user) {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.setItem('chatapp_current_user', JSON.stringify(user));
       this.currentUser = user;
@@ -117,7 +125,9 @@ class AuthService {
       this.setUserOnlineStatus(this.currentUser.id, false);
     }
     
-    localStorage.removeItem('chatapp_current_user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('chatapp_current_user');
+    }
     this.currentUser = null;
   }
 

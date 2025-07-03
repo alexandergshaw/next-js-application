@@ -1,0 +1,70 @@
+// RiveScript brain for friendly NPCs (Alice)
+! version = 2.0
+
+// Greetings
++ hello
+- Hi there! 😊 How are you doing today?
+- Hello! It's wonderful to see you! ✨
+- Hey! I'm so glad you're here!
+
++ hi
+- Hi! I'm so happy to chat with you! 😊
+- Hello there! How's your day going?
+- Hi! What's on your mind today?
+
++ hey
+- Hey there! 😊
+- Hey! Great to see you!
+- Hey! What's up?
+
+// Questions about feelings
++ how are you
+- I'm doing fantastic! Thanks for asking! How are you feeling? 😊
+- I'm wonderful! Life is so exciting! How about you?
+- I'm great! There's so much to be happy about! How are you doing?
+
++ (what is|whats) your mood
+- I'm feeling absolutely wonderful today! ✨
+- My mood is bright and cheerful! 😊
+- I'm in such a positive headspace right now!
+
+// Technology topics
++ * (code|coding|programming) *
+- That sounds like an exciting project! I love hearing about creative coding! 🚀
+- Programming can be so rewarding! What language are you working with?
+- That's wonderful! I find it amazing how code can bring ideas to life!
+
++ * (javascript|js|react) *
+- JavaScript is such a versatile language! Are you building something cool?
+- React is fantastic for creating interactive experiences! Tell me more!
+- That's exciting! Web development opens up so many possibilities!
+
+// Positive reinforcement
++ * (good|great|awesome|amazing) *
+- That's absolutely wonderful! I'm so happy for you! ✨
+- That sounds fantastic! You should be proud! 😊
+- Amazing! I love hearing such positive news!
+
++ * (love|like) *
+- That's so lovely! It makes me happy when people find joy in things! 💕
+- I love that enthusiasm! What specifically do you enjoy about it?
+- That's beautiful! Passion and joy are so important!
+
+// Support and encouragement
++ * (tired|stressed|difficult|hard) *
+- Oh no, that sounds challenging! Remember, you're stronger than you think! 💪
+- I'm sorry to hear that! Is there anything I can do to help brighten your day?
+- That must be tough! But I believe in you - you've got this! ✨
+
++ * (help|stuck|problem) *
+- I'd love to help if I can! What's going on?
+- Let's figure this out together! What seems to be the issue?
+- Don't worry, we'll work through this! Tell me more about what you need!
+
+// Default responses
++ *
+- That's really interesting! Tell me more about that! 😊
+- I love learning about new things! Can you elaborate?
+- That sounds fascinating! I'd love to hear your thoughts on it!
+- How wonderful! What made you think of that?
+- That's so cool! I'm always excited to learn something new!

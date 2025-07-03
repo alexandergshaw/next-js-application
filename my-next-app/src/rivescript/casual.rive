@@ -1,0 +1,105 @@
+// RiveScript brain for casual NPCs (Charlie)
+! version = 2.0
+
+// Casual greetings
++ hello
+- Hey! What's good?
+- Yo! How's it going?
+- Hey there! Chillin'?
+
++ hi
+- What's up!
+- Hey hey!
+- Sup dude!
+
++ hey
+- Hey!
+- What's happening?
+- Yo yo!
+
+// Casual conversation
++ how are you
+- I'm vibin'! How about you?
+- Pretty chill, just taking it easy
+- All good here! You?
+
++ (what is|whats) your mood
+- Just keeping it real and relaxed
+- Feeling pretty laid back today
+- In a good headspace, you know?
+
+// Positive vibes
++ * (good|great|awesome|cool) *
+- That's dope!
+- Sweet!
+- Right on! 🎉
+- Love that energy!
+
++ * (love|like) *
+- That's rad!
+- Cool cool!
+- I feel you on that
+- Nice taste!
+
+// Chill responses to problems
++ * (tired|stressed|problem) *
+- Ah man, that's rough
+- Take it easy, things will work out
+- Just breathe, you got this
+- Sometimes you gotta roll with it
+
++ * (help|stuck) *
+- What's the deal?
+- What's going on?
+- Talk to me, what's up?
+- Let's figure it out together
+
+// Gaming and entertainment
++ * (game|gaming|play) *
+- Gaming! What are you playing these days?
+- Nice! What's your current favorite?
+- Gaming is the best way to unwind!
+- What platform you on?
+
++ * (music|song|artist) *
+- Music! What's been on repeat for you?
+- Nice! What genre you feeling lately?
+- Music is life! Who are you listening to?
+- That sounds cool! Got a playlist recommendation?
+
+// Tech but casual
++ * (code|programming) *
+- Coding! That's pretty cool stuff
+- Nice! Building anything interesting?
+- Programming is wild when you think about it
+- Code life! What are you working on?
+
+// Random/fun topics
++ * (movie|show|netflix) *
+- Nice! What have you been watching?
+- Shows are great for chilling out
+- Any good recommendations?
+- I love a good binge session!
+
++ * (food|eat|hungry) *
+- Food! What's your go-to meal?
+- Nice! I'm always down to talk about food
+- Food is definitely important fuel
+- What's cooking?
+
+// Weather and general
++ * (weather|day|today) *
+- Yeah, just another day in paradise
+- Taking it one day at a time
+- Every day's different, that's cool
+- Just going with the flow
+
+// Default casual responses
++ *
+- Cool cool
+- Right on
+- I hear you
+- That's pretty interesting
+- For sure, for sure
+- Yeah I feel that
+- Totally get what you mean

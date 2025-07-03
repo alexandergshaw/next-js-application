@@ -1,26 +1,97 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Download, Image as ImageIcon, FileText, Heart, ThumbsUp, Laugh, Angry } from 'lucide-react';
+import { Download, Image as ImageIcon, FileText, Heart, ChevronDown, ArrowDown } from 'lucide-react';
 import useChatStore from '../store/chatStore';
 import TypingIndicator from './TypingIndicator';
 
 const REACTION_EMOJIS = ['❤️', '👍', '😂', '😮', '😢', '😡'];
 
-export default function MessageList({ messages }) {
+export default function MessageList() {
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const lastMessageCountRef = useRef(0);
+  
+  const messages = useChatStore(state => state.messages);
   const currentUser = useChatStore(state => state.user);
   const addReaction = useChatStore(state => state.addReaction);
+  
   const [showReactions, setShowReactions] = useState(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Smooth scroll to bottom
+  const scrollToBottom = useCallback((force = false) => {
+    if (messagesEndRef.current && (isAtBottom || force)) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      });
+      setUnreadCount(0);
+      setShowScrollButton(false);
+    }
+  }, [isAtBottom]);
 
+  // Instant scroll to bottom (for initial load)
+  const scrollToBottomInstant = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: 'auto',
+        block: 'end'
+      });
+      setUnreadCount(0);
+      setShowScrollButton(false);
+    }
+  }, []);
+
+  // Handle scroll events
+  const handleScroll = useCallback(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    const threshold = 100;
+
+    const atBottom = distanceFromBottom <= threshold;
+    setIsAtBottom(atBottom);
+    setShowScrollButton(!atBottom && scrollHeight > clientHeight + 200);
+
+    // Clear user scrolling flag after a delay
+    setIsUserScrolling(true);
+    clearTimeout(handleScroll.timeoutId);
+    handleScroll.timeoutId = setTimeout(() => {
+      setIsUserScrolling(false);
+    }, 150);
+  }, []);
+
+  // Auto-scroll for new messages
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const newMessageCount = messages.length;
+    const hasNewMessages = newMessageCount > lastMessageCountRef.current;
+    lastMessageCountRef.current = newMessageCount;
+
+    if (hasNewMessages) {
+      if (isAtBottom || newMessageCount === 1) {
+        // Auto-scroll if user is at bottom or it's the first message
+        setTimeout(() => scrollToBottom(), 50);
+      } else if (!isUserScrolling) {
+        // Show unread indicator if user is scrolled up
+        setUnreadCount(prev => prev + 1);
+        setShowScrollButton(true);
+      }
+    }
+  }, [messages.length, isAtBottom, isUserScrolling, scrollToBottom]);
+
+  // Initial scroll to bottom
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottomInstant();
+    }
+  }, [messages.length > 0, scrollToBottomInstant]);
 
   const formatTime = (timestamp) => {
     try {
@@ -138,15 +209,41 @@ export default function MessageList({ messages }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
-      {messages.length === 0 ? (
-        <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-          <div className="text-center">
-            <div className="text-4xl mb-2">💬</div>
-            <p>No messages yet. Start the conversation!</p>
+    <div className="relative flex-1 flex flex-col min-h-0">
+      {/* Messages Container */}
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth bg-gray-50 dark:bg-gray-900"
+        onScroll={handleScroll}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
+        }}
+      >
+        <style jsx>{`
+          div::-webkit-scrollbar {
+            width: 6px;
+          }
+          div::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          div::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+          }
+          div::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.7);
+          }
+        `}</style>
+
+        {messages.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+            <div className="text-center">
+              <div className="text-4xl mb-2">💬</div>
+              <p>No messages yet. Start the conversation!</p>
+            </div>
           </div>
-        </div>
-      ) : (
+        ) : (
         messages.map((message) => {
           const isMine = isMyMessage(message);
           const isSystem = message.username === 'System';
@@ -154,7 +251,8 @@ export default function MessageList({ messages }) {
           return (
             <div key={message.id} className="flex flex-col">
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg relative group ${
+                id={`message-${message.id}`}
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg relative group transition-all duration-300 ${
                   isSystem
                     ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 self-center text-center text-sm'
                     : isMine
@@ -226,12 +324,31 @@ export default function MessageList({ messages }) {
             </div>
           );
         })
+        )}
+        
+        {/* Typing indicator */}
+        <TypingIndicator />
+        
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Scroll to bottom button */}
+      {showScrollButton && (
+        <div className="absolute bottom-4 right-4 z-10">
+          <button
+            onClick={() => scrollToBottom(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-all duration-200 flex items-center space-x-2 group"
+            title="Scroll to bottom"
+          >
+            <ArrowDown className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
       )}
-      
-      {/* Typing indicator */}
-      <TypingIndicator />
-      
-      <div ref={messagesEndRef} />
     </div>
   );
 }

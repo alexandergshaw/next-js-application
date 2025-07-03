@@ -35,6 +35,36 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Global styles for clickable elements */
+button,
+[role="button"],
+a,
+select,
+summary,
+[type="checkbox"],
+[type="radio"],
+[type="submit"],
+[type="reset"],
+[type="file"],
+[type="button"],
+[onclick],
+.clickable {
+  cursor: pointer !important;
+}
+
+/* Disabled elements should show not-allowed cursor */
+button:disabled,
+[role="button"]:disabled,
+a.disabled,
+select:disabled,
+[type="checkbox"]:disabled,
+[type="radio"]:disabled,
+[type="submit"]:disabled,
+[type="reset"]:disabled,
+[type="button"]:disabled {
+  cursor: not-allowed !important;
+}
+
 /* Custom styles for Phase 3 features - Enhanced smooth animations */
 
 /* Ultra smooth message highlighting animations */

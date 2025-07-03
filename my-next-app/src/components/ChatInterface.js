@@ -283,7 +283,10 @@ export default function ChatInterface() {
       <div className="flex flex-1 min-h-0">
         {/* Sidebar (channels + online users) */}
         {/* Overlay for mobile */}
-        <div className={`fixed inset-0 z-40 bg-black bg-opacity-40 transition-opacity md:hidden ${showSidebar ? 'block' : 'hidden'}`} onClick={() => setShowSidebar(false)}></div>
+        <div 
+          className={`fixed inset-0 z-40 bg-black bg-opacity-40 transition-opacity md:hidden clickable ${showSidebar ? 'block' : 'hidden'}`} 
+          onClick={() => setShowSidebar(false)}
+        ></div>
         {/* Sidebar: on desktop, stack RoomSelector and OnlineUsers vertically in one column */}
         <aside className={`fixed z-50 top-0 left-0 h-full w-64 bg-white dark:bg-gray-700 shadow-lg transform transition-transform duration-200 md:static md:translate-x-0 md:flex md:flex-col md:w-64 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
           {/* Mobile: show RoomSelector and OnlineUsers in menu */}

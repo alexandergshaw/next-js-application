@@ -32,10 +32,7 @@ export default function OnlineUsers() {
 
       <div className="flex-1 overflow-y-auto">
         {onlineUsers.length === 0 ? (
-          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-            <div className="text-2xl mb-2">👥</div>
-            <p className="text-sm">No one else is online</p>
-          </div>
+          <></>
         ) : (
           <div className="p-2">
             {onlineUsers.map((user) => (

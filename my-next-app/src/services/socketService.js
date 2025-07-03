@@ -12,6 +12,12 @@ class SocketService {
   }
 
   connect(user, callbacks = {}) {
+    // Return early if no user is provided
+    if (!user || !user.username) {
+      console.warn('No user data provided to socket service');
+      return null;
+    }
+
     this.user = user;
     this.callbacks = callbacks;
     

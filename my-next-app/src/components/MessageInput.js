@@ -136,7 +136,7 @@ export default function MessageInput({ onSendMessage, onFileSelect, disabled }) 
                 type="button"
                 onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
                 disabled={disabled}
-                className="absolute right-2 bottom-2 p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute right-2 bottom-2 p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed mr-10"
                 title="Add emoji"
               >
                 <Smile className="w-5 h-5" />
